@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:getx_test/controller/counter_controller.dart';
+import 'package:getx_test/controller/user_cotroller.dart';
+import 'package:getx_test/list_user.dart';
+import 'package:getx_test/model/user_model.dart';
+import 'package:badges/badges.dart' as badges;
 
 void main() {
   runApp(const MyApp());
@@ -31,47 +35,78 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  CounterController controller = Get.put(CounterController());
-
+  final userController = Get.put(UserController());
+  final nameController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<CounterController>(
-        init: controller,
+    return GetBuilder<UserController>(
+        init: userController,
         builder: (contexts) {
           return Scaffold(
             appBar: AppBar(
               title: Text(widget.title),
+              actions: [
+                badges.Badge(
+                  position: badges.BadgePosition.topEnd(top: -10, end: -12),
+                  showBadge: userController.users.isEmpty ? false : true,
+                  ignorePointer: false,
+                  onTap: () {
+                    Get.to(() => ListUser());
+                  },
+                  badgeContent: Text(userController.users.length.toString()),
+                  child: const Icon(
+                    Icons.person,
+                    size: 30,
+                  ),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+              ],
             ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text(
-                    'You have pushed the button this many times:',
+            body: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    controller: nameController,
+                    decoration: const InputDecoration(
+                        border: OutlineInputBorder(), hintText: 'Enter name'),
                   ),
-                  Text(
-                    '${controller.number.value}',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ],
-              ),
+                )
+              ],
             ),
             floatingActionButton: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 FloatingActionButton(
-                  onPressed: () => controller.deCrementNumber(),
+                  backgroundColor: Colors.red,
+                  onPressed: () => clearText(),
                   tooltip: 'Decrement',
-                  child: const Icon(Icons.remove),
+                  child: const Icon(Icons.clear),
                 ),
                 FloatingActionButton(
-                  onPressed: () => controller.inCrementNumber(),
+                  onPressed: () async {
+                    if (nameController.text.isNotEmpty) {
+                      userController.addUser(UserModel(
+                          id: DateTime.now().microsecondsSinceEpoch,
+                          name: nameController.text));
+                      clearText();
+                    }
+                  },
                   tooltip: 'Increment',
-                  child: const Icon(Icons.add),
+                  child: const Icon(Icons.done),
                 ),
               ],
             ),
           );
         });
+  }
+
+  void clearText() {
+    setState(() {
+      nameController.text = '';
+    });
   }
 }
