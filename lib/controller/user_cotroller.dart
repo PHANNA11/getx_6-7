@@ -7,4 +7,14 @@ class UserController extends GetxController {
     users.add(user);
     update();
   }
+
+  void deleteUser(int index) async {
+    users.removeAt(index);
+    update();
+  }
+
+  void updateUser(int index, UserModel userModel) async {
+    users[index] = userModel;
+    update();
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:get/get.dart';
 import 'package:getx_test/controller/user_cotroller.dart';
+import 'package:getx_test/model/user_model.dart';
 
 class ListUser extends StatelessWidget {
   ListUser({super.key});
@@ -19,7 +20,19 @@ class ListUser extends StatelessWidget {
           itemBuilder: (context, index) => Card(
             elevation: 0,
             child: ListTile(
+              onTap: () {
+                userController.updateUser(
+                    index,
+                    UserModel(
+                        id: userController.users[index].id,
+                        name: 'namefghjkl'));
+              },
               title: Text(userController.users[index].name),
+              trailing: IconButton(
+                  onPressed: () {
+                    userController.deleteUser(index);
+                  },
+                  icon: Icon(Icons.delete)),
             ),
           ),
         ),
